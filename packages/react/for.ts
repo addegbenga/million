@@ -33,6 +33,7 @@ const MillionArray = <T>({
   const [portals] = useState<{ current: MillionPortal[] }>(() => ({
     current: Array(each.length),
   }));
+
   const fragmentRef = useRef<ReturnType<typeof mapArray> | null>(null);
   const cache = useRef<ArrayCache<T>>({
     each: null,
@@ -75,7 +76,9 @@ const MillionArray = <T>({
         portals,
         memo,
       );
+
       fragmentRef.current = mapArray(newChildren);
+
       if (!MapHas$.call(REGISTRY, MillionFor)) {
         MapSet$.call(REGISTRY, MillionFor, fragmentRef.current);
       }
@@ -106,6 +109,7 @@ const createChildren = <T>(
 ): Block[] => {
   const children = Array(each.length);
   const currentCache = cache.current as any;
+
   for (let i = 0, l = each.length; i < l; ++i) {
     if (memo && currentCache.each && currentCache.each[i] === each[i]) {
       children[i] = currentCache.children?.[i];
@@ -136,6 +140,7 @@ const createChildren = <T>(
     }
 
     const block = createBlock((props?: MillionProps) => props?.scope);
+
     const currentBlock = (props: MillionProps, index: number) => {
       return block(
         {

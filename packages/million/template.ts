@@ -246,6 +246,5 @@ export const renderToTemplate = (
   }
 
   if (current.i!.length || current.e.length) edits.push(current);
-
   return `<${vnode.type}${props}>${children}</${vnode.type}>`;
 };

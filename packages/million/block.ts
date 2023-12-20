@@ -11,7 +11,7 @@ import {
   setStyleAttribute,
   setSvgAttribute,
   childAt,
-  replaceChild$,
+  // replaceChild$,
   stringToDOM,
 } from './dom';
 import { renderToTemplate } from './template';
@@ -120,11 +120,15 @@ export class Block extends AbstractBlock {
     if (shouldUpdate) this.u = shouldUpdate;
     if (getElements) this.g = getElements;
   }
+
   m(parent?: HTMLElement, refNode: Node | null = null): HTMLElement {
     if (this.l) return this.l;
+
     // cloneNode(true) uses less memory than recursively creating new nodes
     const root = cloneNode$.call(this.r, true) as HTMLElement;
+
     const elements = this.g?.(root);
+
     if (elements) this.c = elements;
 
     for (let i = 0, j = this.e.length; i < j; ++i) {
@@ -145,7 +149,9 @@ export class Block extends AbstractBlock {
           if (value && typeof value === 'object' && 'foreign' in value) {
             const scopeEl = value.current;
             el[TEXT_NODE_CACHE][k] = scopeEl;
+
             insertBefore$.call(el, scopeEl, childAt(el, edit.i!));
+
             continue;
           }
           // insertText() on mount, setText() on patch
@@ -193,8 +199,12 @@ export class Block extends AbstractBlock {
     }
 
     if (parent) {
-      insertBefore$.call(parent, root, refNode);
+      //Getting the first slot here to avoid nested slot.
+      const newRoot: HTMLElement =
+        root.children.length > 0 ? (root.children[0] as HTMLElement) : root;
+      insertBefore$.call(parent, newRoot, refNode);
     }
+
     this.l = root;
 
     return root;
@@ -237,14 +247,21 @@ export class Block extends AbstractBlock {
             'foreign' in newValue
           ) {
             const scopeEl = el[TEXT_NODE_CACHE][k];
+
             if ('unstable' in newValue && oldValue !== newValue) {
               const newScopeEl = newValue.current;
               el[TEXT_NODE_CACHE][k] = newScopeEl;
-              replaceChild$.call(el, newScopeEl, scopeEl);
+
+              //Removing this Line For Now.
+
+              // replaceChild$.call(
+              //   el,
+              //   newScopeEl.children[0],
+              //   scopeEl.children[0],
+              // );
             } else {
               newValue.current = scopeEl;
             }
-
             continue;
           }
           setText(
@@ -298,6 +315,7 @@ const getCurrentElement = (
   key?: number,
 ): HTMLElement => {
   const pathLength = path.length;
+
   if (!pathLength) return root;
   const isCacheAndKeyExists = cache && key !== undefined;
   if (isCacheAndKeyExists && cache[key]) {
@@ -312,6 +330,7 @@ const getCurrentElement = (
     root = childAt(root, siblings);
   }
   if (isCacheAndKeyExists) cache[key] = root;
+
   return root;
 };
 
